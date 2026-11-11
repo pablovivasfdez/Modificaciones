@@ -1,0 +1,57 @@
+[build-system]
+requires = ["setuptools>=77,<82"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mazegen"
+version = "1.0.0"
+readme = "README.md"
+requires-python = ">=3.14"
+license = "MIT"
+license-files = ["LICENSE.md"]
+authors = [
+    { name = "jgilaber" },
+    { name = "p-vivas" },
+]
+keywords = ["maze", "generator", "42", "pacman"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "build>=1.2,<2",
+    "flake8>=7.1,<8",
+    "mypy>=1.13,<2",
+    "pytest>=8.3,<9",
+    "wheel>=0.44,<1",
+]
+
+[tool.setuptools]
+packages = ["mazegen"]
+package-dir = { "mazegen" = "mazegen" }
+
+[tool.setuptools.package-data]
+mazegen = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+python_files = ["test_*.py"]
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_ignores = true
+check_untyped_defs = true
+disallow_untyped_defs = true
+ignore_missing_imports = true
+exclude = ["^docs/", "^\\.venv/", "^build/", "^dist/"]
+
+[tool.flake8]
+max-line-length = 79

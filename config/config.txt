@@ -1,0 +1,10 @@
+WIDTH=20
+HEIGHT=15
+ENTRY=0,0
+EXIT=19,14
+OUTPUT_FILE=output/maze.txt
+PERFECT=False
+SEED=42
+ALGORITHM=recursive_backtracker
+THEME=midnight
+RENDERER=terminal

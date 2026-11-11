@@ -1,0 +1,6 @@
+include LICENSE.md
+include README.md
+include pyproject.toml
+include config/config.txt
+recursive-include mazegen *.py py.typed
+recursive-include tests *.py
