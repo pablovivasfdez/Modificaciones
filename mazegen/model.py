@@ -190,6 +190,7 @@ class Maze:
             )
         return self.grid[y][x]
 
+#OJOJOJO
     def get_neighbor(
         self,
         x: int,
@@ -273,6 +274,7 @@ class Maze:
             for cell in row:
                 cell.visited = False
 
+#OJOJOJOJO
     def non_pattern_cells(self) -> list[tuple[int, int]]:
         """Return every walkable coordinate, excluding the ``42`` cells."""
         return [
@@ -315,6 +317,7 @@ class Maze:
                 continue
             result.append(neighbor)
         return result
+#OJOJOJOJO
 #para el chequer de haber visitadas todas
     def region(
         self,
@@ -342,6 +345,7 @@ class Maze:
         return self.region(self.entry) == target
 #braid de la IA
 
+#OJOJOJOJJO
     def count_passages(self) -> int:
         """Return the number of open passages between adjacent cells."""
         total = 0
@@ -364,6 +368,7 @@ class Maze:
                 total += 1
         return total
 
+#OJOJOJO
 #braid de la IA
     def count_loops(self) -> int:
         """Return the number of independent cycles in the walkable graph."""
