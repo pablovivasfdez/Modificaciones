@@ -1,18 +1,27 @@
 from __future__ import annotations
 import random
 from .model import CARDINAL_DIRECTIONS, Direction, Maze, MazeError
+from collections import deque
 
 WallCandidate = tuple[int, int, Direction]
 Neighbor = tuple[Direction, tuple[int, int]]
 SUPPORTED_ALGORITHMS: tuple[str, ...] = ("dfs", "hunt_and_kill")
-
+Parent = tuple[tuple[int, int], str] | None
+Position = tuple[int, int]
+LETTERS: dict[Direction, str] = {
+    Direction.NORTH: "N",
+    Direction.EAST: "E",
+    Direction.SOUTH: "S",
+    Direction.WEST: "W",
+}
 
 class BaseAlgorithm:
-    def __init__(self, maze: Maze, rng: random.Random, start: tuple[int, int] | None) -> None:
+    def __init__(self, maze: Maze, rng: random.Random, start: tuple[int, int] | None = None, finish: tuple[int, int] | None = None) -> None:
         self.maze = maze
         self.rng = rng
         self.start = start
         self.visited: set[tuple[int, int]] = set()
+        self.finish = finish
 
     def generate(self) -> None:
         """Método principal que lanza el algoritmo (Fachada)."""
@@ -120,6 +129,7 @@ class BaseAlgorithm:
         """Lógica del usuario para hacer el laberinto jugable rompiendo muros (35%)."""
         #warnings: list[str] = []
 
+        copy_maze = self.maze
         for cy in range(self.maze.height):
             for cx in range(self.maze.width):
                 if (cx, cy) in self.maze.pattern42_cells:
@@ -135,6 +145,9 @@ class BaseAlgorithm:
 
                     if self.maze.has_wall(cx, cy, direction) and not self._makes_3_square(cx, cy, direction):
                         self.maze.open_wall(cx, cy, direction)
+        if (self.maze.count_loops() <= 1):
+            self.maze = copy_maze
+            self.braid(p_break)
 
     """
     def braid(self, target_loops: int = 3) -> list[str]:
@@ -272,6 +285,55 @@ class HuntAndKill(BaseAlgorithm):
             if hunted is None:
                 return
             current = hunted
+
+
+class BFS(BaseAlgorithm):
+
+    def _carve(self) -> None:
+        ...
+
+    def solve(self) -> str:
+        origin = self.maze.entry if self.start is None else self.start
+        destination = self.maze.exit if self.finish is None else self.finish
+
+        parents: dict[Position, Parent] = {origin: None}
+        queue: deque[Position] = deque([origin])
+        while queue:
+            current = queue.popleft()
+            if current == destination:
+                break
+            for direction in CARDINAL_DIRECTIONS:
+                neighbor = self.maze.get_neighbor(
+                    current[0],
+                    current[1],
+                    direction
+                )
+                if neighbor is None: continue
+                if neighbor in self.maze.pattern42_cells: continue
+                if neighbor in parents: continue
+                if self.maze.has_wall(current[0], current[1], direction): continue
+                parents[neighbor] = (current, LETTERS[direction])
+                queue.append(neighbor)
+
+        if destination not in parents:
+            raise MazeError(
+                "There is no existing path between the start and the exit"
+            )
+
+        steps: list[str] = []
+        node = destination
+        while node != origin:
+            parent = parents[node]
+            if parent is None:
+                raise MazeError(
+                    "It was impossible to rebuild the shortests path"
+                )
+            previous, letter = parent
+            steps.append(letter)
+            node = previous
+        steps.reverse()
+        return "".join(steps)
+
 
 
 class AlgorithmFactory:
